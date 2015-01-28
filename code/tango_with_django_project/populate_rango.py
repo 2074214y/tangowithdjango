@@ -60,6 +60,19 @@ def populate():
         url="http://flask.pocoo.org",
         views = 54)
 
+    rostislav_cat=add_cat("Rostislav",
+                          views=23,
+                          likes=15)
+    add_page(cat=rostislav_cat,
+             title="githubpage",
+             url="https://github.com/2074214y",
+             views=12)
+
+    add_page(cat=rostislav_cat,
+             title="pythonanywhere",
+             url="https://www.pythonanywhere.com/user/2074214/consoles/",
+             views=23)
+
     # Print out what we have added to the user.
     for c in Category.objects.all():
         for p in Page.objects.filter(category=c):
