@@ -1,35 +1,27 @@
-<!DOCTYPE html>
-{% load staticfiles %} <! -- New line -->
-<html>
-    <head>
-        <title>Rango</title>
-    </head>
-
-    <body>
-        <h1>Rango says...hello world!</h1>
-
-        {% if categories %}
-            <ul>
-                {% for category in categories %}
-                <li><a href="/rango/category/{{ category.slug }}">{{ category.name }}</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <strong>There are no categories present.</strong>
-        {% endif %}
-	
-	{% if pages %}
-            <ul>
-                {% for page in pages %}
-                <li><a href=page.url>{{ page.title }}</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <strong>There are no pages.</strong>
-        {% endif %}
-
-        <a href="/rango/about/">About</a><br/>
-        <img src="{% static "images/rango_legend.jpg" %}" alt = "Picture of Rango" /> <!-- New line -->
-    </body>
-</html>
-
+ Hello world!<br/>
+ 
+         {% if categories %}
+             <ul>
+                 {% for category in categories %}
+                 <li><a href="/rango/category/{{ category.slug }}">{{ category.name }}</a></li>
+                 {% endfor %}
+             </ul>
+         {% else %}
+             <strong>There are no categories present.</strong>
+         {% endif %}
+ 
+         {% if pages %}
+             Top pages:
+             <ul>
+                 {% for page in pages %}
+                 <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+                 {% endfor %}
+             </ul>
+         {% else %}
+             <strong>No pages.</strong>
+         {% endif %}
+ 
+        <a href="/rango/add_category/">Add new category</a><br/>
+         <a href="/rango/about/">About</a><br/>
+     </body>
+ </html>
