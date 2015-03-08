@@ -1,6 +1,6 @@
 from rango.models import Page
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rango.models import Category
 from rango.forms import CategoryForm
 from rango.forms import PageForm
@@ -187,19 +187,28 @@ def add_category(request):
     return render(request, 'rango/add_category.html', {'form': form})
 
 def category(request, category_name_slug):
-    context_dict = {}
 
-    try:
-        category = Category.objects.get(slug = category_name_slug)
-        context_dict['category_name'] = category.name
-        pages = Page.objects.filter(category=category)
-        context_dict['pages'] = pages
-        context_dict['category'] = category
+        context_dict = {'result_list': None, 'query': None}
+	if request.method == 'POST':
+             query = request.POST['query'].strip()
+	     if query:
+		context_dict['result_list'] = run_query(query)
+                context_dict['query'] = query
+        try:
+            category = Category.objects.get(slug=category_name_slug)
+            context_dict['category_name'] = category.name
+	    context_dict['category'] = category
 
-    except Category.DoesNotExist:
-        pass
+            pages = Page.objects.filter(category=category).order_by('-views')
+            context_dict['pages'] = pages
+            context_dict['category'] = category
 
-    return render(request, 'rango/category.html', context_dict)
+        except Category.DoesNotExist:
+                pass
+        if not context_dict['query']:
+          context_dict['query'] = category.name
+
+        return render(request, 'rango/category.html', context_dict)
 
 def index(request):
 
@@ -243,3 +252,32 @@ def about(request):
 
     # remember to include the visit data
     return render(request, 'rango/about.html', {'visits': count})
+
+def track_url(request):
+
+    if request.method == 'GET':
+       if 'page_id' in request.GET:
+          page_id = request.GET['page_id']
+          try:
+              page = Page.objects.get(id=page_id)
+          except:
+              return redirect('index')
+          page.views = page.views + 1
+          page.save()
+          return redirect(page.url)
+    return redirect('index')
+
+def register_profile(request):
+
+    if request.method == "POST":
+        profile_form = UserProfileForm(data=request.POST)
+	if profile_form.is_valid():
+            profile = profile_form.save(commit=False)
+            profile.user = get_user_model()
+            if 'picture' in request.FILES:
+                profile.picture = request.FILES['picture']
+            profile.save()
+            return redirect('index')
+        else:
+            profile_form = UserProfileForm()
+        return render(request, 'registration/profile_registration.html',{'profile_form': profile_form})
